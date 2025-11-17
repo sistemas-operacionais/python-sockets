@@ -9,8 +9,9 @@
 6. [Cliente Echo](#cliente-echo)
 7. [Servidor de Chat](#servidor-de-chat)
 8. [Cliente de Chat](#cliente-de-chat)
-9. [Dicas e Boas Práticas](#dicas-e-boas-práticas)
-10. [Próximos Passos](#próximos-passos)
+9. [Servidor e Cliente HTTP](#servidor-e-cliente-http)
+10. [Dicas e Boas Práticas](#dicas-e-boas-práticas)
+11. [Próximos Passos](#próximos-passos)
 
 ## O que são Sockets?
 
@@ -361,6 +362,172 @@ thread_enviar.start()
 3. Escolha um apelido para cada cliente
 4. Comece a conversar!
 
+## Servidor e Cliente HTTP
+
+### O que é HTTP?
+
+**HTTP (HyperText Transfer Protocol)** é o protocolo que alimenta a World Wide Web. Ele define como navegadores e servidores se comunicam. HTTP é um protocolo **baseado em texto** construído sobre TCP.
+
+### Por que HTTP é Importante?
+
+- Usado em toda a web (navegadores, APIs, web services)
+- Base para REST APIs e web services modernos
+- Protocolo simples de entender e depurar
+- Fundamento para frameworks web (Flask, Django, etc.)
+
+### Estrutura Básica do HTTP
+
+**Requisição HTTP:**
+```
+GET /pagina HTTP/1.1
+Host: localhost:8080
+User-Agent: Navegador/1.0
+
+```
+
+**Resposta HTTP:**
+```
+HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 123
+
+<html><body>Olá!</body></html>
+```
+
+### Nosso Exemplo
+
+Criamos um **servidor HTTP básico** que:
+- Aceita requisições GET
+- Serve páginas HTML
+- Implementa roteamento simples
+- Retorna códigos de status (200, 404, 405)
+
+E um **cliente HTTP** que:
+- Constrói requisições HTTP GET
+- Envia requisições ao servidor
+- Faz parsing das respostas
+- Exibe status, cabeçalhos e corpo
+
+### Como Executar
+
+**Terminal 1 (Servidor):**
+```bash
+python exemplos/http/servidor_http.py
+```
+
+**Terminal 2 (Cliente):**
+```bash
+python exemplos/http/cliente_http.py
+```
+
+**Ou use um navegador:**
+Abra http://localhost:8080/ no seu navegador!
+
+### Código Simplificado
+
+**Servidor HTTP:**
+```python
+import socket
+
+def construir_resposta_http(codigo, mensagem, conteudo):
+    """Constrói resposta HTTP válida."""
+    resposta = f"HTTP/1.1 {codigo} {mensagem}\r\n"
+    resposta += "Content-Type: text/html; charset=utf-8\r\n"
+    resposta += f"Content-Length: {len(conteudo.encode('utf-8'))}\r\n"
+    resposta += "Connection: close\r\n"
+    resposta += "\r\n"
+    resposta += conteudo
+    return resposta
+
+# Criar e configurar servidor
+servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+servidor.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+servidor.bind(('localhost', 8080))
+servidor.listen(5)
+
+while True:
+    conexao, endereco = servidor.accept()
+    requisicao = conexao.recv(4096).decode('utf-8')
+    
+    # Processar requisição e enviar resposta
+    if '/' in requisicao:
+        html = '<h1>Bem-vindo!</h1>'
+        resposta = construir_resposta_http(200, "OK", html)
+    else:
+        html = '<h1>404 - Não encontrado</h1>'
+        resposta = construir_resposta_http(404, "Not Found", html)
+    
+    conexao.sendall(resposta.encode('utf-8'))
+    conexao.close()
+```
+
+**Cliente HTTP:**
+```python
+import socket
+
+def fazer_requisicao(host, porta, caminho='/'):
+    """Faz requisição HTTP GET."""
+    cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    cliente.connect((host, porta))
+    
+    # Construir requisição
+    requisicao = f"GET {caminho} HTTP/1.1\r\n"
+    requisicao += f"Host: {host}:{porta}\r\n"
+    requisicao += "Connection: close\r\n"
+    requisicao += "\r\n"
+    
+    # Enviar e receber
+    cliente.sendall(requisicao.encode('utf-8'))
+    resposta = b''
+    while True:
+        dados = cliente.recv(4096)
+        if not dados:
+            break
+        resposta += dados
+    
+    cliente.close()
+    return resposta.decode('utf-8')
+
+# Usar
+resposta = fazer_requisicao('localhost', 8080, '/')
+print(resposta)
+```
+
+### Conceitos Importantes
+
+**Códigos de Status HTTP:**
+- **200 OK**: Sucesso
+- **404 Not Found**: Página não encontrada
+- **405 Method Not Allowed**: Método não suportado
+- **500 Internal Server Error**: Erro no servidor
+
+**Cabeçalhos HTTP:**
+- `Content-Type`: Tipo do conteúdo (text/html, application/json)
+- `Content-Length`: Tamanho do corpo em bytes
+- `Connection`: close ou keep-alive
+- `Host`: Nome do servidor
+
+**Métodos HTTP:**
+- **GET**: Buscar dados
+- **POST**: Enviar dados
+- **PUT**: Atualizar dados
+- **DELETE**: Remover dados
+
+Nosso exemplo implementa apenas GET, o mais básico.
+
+### Tutorial Completo
+
+Para um tutorial detalhado sobre HTTP com muitos exemplos e explicações:
+
+👉 **Ver [exemplos/http/README.md](exemplos/http/README.md)**
+
+Este tutorial inclui:
+- Explicações detalhadas do protocolo HTTP
+- Como funciona cada parte do código
+- Experimentos e modificações sugeridas
+- Comparação com bibliotecas de alto nível
+- Próximos passos no aprendizado
+
 ## Dicas e Boas Práticas
 
 ### 1. Sempre Feche Conexões
@@ -419,18 +586,21 @@ Para muitos clientes:
 
 1. **Socket UDP**: Comunicação sem conexão
 2. **asyncio**: Programação assíncrona
-3. **SSL/TLS**: Conexões seguras
-4. **Protocolos**: HTTP, FTP, SMTP
+3. **SSL/TLS**: Conexões seguras (HTTPS)
+4. **Protocolos**: FTP, SMTP, WebSocket
 5. **Serialização**: JSON, pickle, protobuf
 6. **Multiplexing**: select, poll, epoll
+7. **HTTP/2 e HTTP/3**: Versões modernas do HTTP
 
 ### Projetos Práticos:
 
 - Sistema de transferência de arquivos
-- Servidor HTTP simples
+- ✅ **Servidor HTTP simples** (já implementado em `exemplos/http/`)
+- REST API básica
 - Jogo multiplayer simples
 - Sistema de notificações
 - Proxy/Tunnel
+- Web scraper customizado
 
 ### Bibliotecas de Alto Nível:
 
