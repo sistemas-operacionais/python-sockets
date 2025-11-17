@@ -1,8 +1,9 @@
 # python-sockets
 Notas de aula sobre sockets em Python
 
-## 📚 Tutorial Completo
+## 📚 Documentação
 
+### [Tutorial Completo](TUTORIAL.md)
 Veja o [Tutorial de Sockets em Python para Iniciantes](TUTORIAL.md) com explicações detalhadas sobre:
 - Conceitos básicos de sockets
 - Arquitetura cliente-servidor
@@ -10,6 +11,12 @@ Veja o [Tutorial de Sockets em Python para Iniciantes](TUTORIAL.md) com explica�
 - Exemplos práticos comentados
 - Boas práticas e dicas
 - Próximos passos
+
+### [Guia de Execução](EXEMPLOS.md)
+Consulte o [Guia de Execução dos Exemplos](EXEMPLOS.md) para:
+- Instruções passo a passo de cada exemplo
+- Solução de problemas comuns
+- Dicas de modificação e experimentos
 
 ## 🚀 Exemplos Práticos
 
