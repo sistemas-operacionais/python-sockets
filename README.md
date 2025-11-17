@@ -56,6 +56,20 @@ python exemplos/servidor_chat.py
 python exemplos/cliente_chat.py
 ```
 
+### 4. Servidor e Cliente HTTP
+Implementação básica do protocolo HTTP com servidor web e cliente.
+
+**Executar:**
+```bash
+# Terminal 1
+python exemplos/http/servidor_http.py
+
+# Terminal 2 (ou use navegador em http://localhost:8080)
+python exemplos/http/cliente_http.py
+```
+
+**Tutorial completo:** Ver [exemplos/http/README.md](exemplos/http/README.md)
+
 ## 📋 Estrutura do Repositório
 
 ```
@@ -69,7 +83,11 @@ python-sockets/
     ├── servidor_echo.py   # Servidor echo
     ├── cliente_echo.py    # Cliente echo
     ├── servidor_chat.py   # Servidor de chat multi-cliente
-    └── cliente_chat.py    # Cliente de chat
+    ├── cliente_chat.py    # Cliente de chat
+    └── http/              # Exemplos HTTP
+        ├── README.md      # Tutorial de HTTP
+        ├── servidor_http.py # Servidor HTTP básico
+        └── cliente_http.py  # Cliente HTTP
 ```
 
 ## 🎓 Conceitos Abordados
@@ -82,6 +100,9 @@ python-sockets/
 - ✅ Threading para múltiplos clientes
 - ✅ Broadcast de mensagens
 - ✅ Tratamento de desconexões
+- ✅ Protocolo HTTP (requisições e respostas)
+- ✅ Servidor web básico
+- ✅ Cliente HTTP customizado
 
 ## 🔧 Requisitos
 
